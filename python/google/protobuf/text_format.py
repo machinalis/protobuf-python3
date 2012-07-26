@@ -32,7 +32,7 @@
 
 __author__ = 'kenton@google.com (Kenton Varda)'
 
-import cStringIO
+from six.moves import cStringIO as StringIO
 import re
 
 from collections import deque
@@ -54,7 +54,7 @@ class ParseError(Exception):
 
 
 def MessageToString(message, as_utf8=False, as_one_line=False):
-  out = cStringIO.StringIO()
+  out = StringIO()
   PrintMessage(message, out, as_utf8=as_utf8, as_one_line=as_one_line)
   result = out.getvalue()
   out.close()
