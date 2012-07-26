@@ -60,7 +60,7 @@ class BaseContainer(object):
     self._values = []
 
   def __getitem__(self, key):
-    """Retrieves item by the specified key."""
+    """Retrieves item (or items) in the position(s) specified by key."""
     return self._values[key]
 
   def __len__(self):
@@ -139,33 +139,23 @@ class RepeatedScalarFieldContainer(BaseContainer):
     self._values.remove(elem)
     self._message_listener.Modified()
 
-  def __setitem__(self, key, value):
-    """Sets the item on the specified position."""
-    self._type_checker.CheckValue(value)
-    self._values[key] = value
-    self._message_listener.Modified()
+  def __setitem__(self, key, values):
+    """Sets the item (or subset of items) on the specified position(s)."""
+    if isinstance(key, slice):
+      new_values = []
+      for value in values:
+        self._type_checker.CheckValue(value)
+        new_values.append(value)
+    else:
+      self._type_checker.CheckValue(values)
+      new_values = values
 
-  def __getslice__(self, start, stop):
-    """Retrieves the subset of items from between the specified indices."""
-    return self._values[start:stop]
-
-  def __setslice__(self, start, stop, values):
-    """Sets the subset of items from between the specified indices."""
-    new_values = []
-    for value in values:
-      self._type_checker.CheckValue(value)
-      new_values.append(value)
-    self._values[start:stop] = new_values
+    self._values[key] = new_values
     self._message_listener.Modified()
 
   def __delitem__(self, key):
-    """Deletes the item at the specified position."""
+    """Deletes the item (or subset of items) at the specified position(s)."""
     del self._values[key]
-    self._message_listener.Modified()
-
-  def __delslice__(self, start, stop):
-    """Deletes the subset of items from between the specified indices."""
-    del self._values[start:stop]
     self._message_listener.Modified()
 
   def __eq__(self, other):
@@ -235,18 +225,9 @@ class RepeatedCompositeFieldContainer(BaseContainer):
     """
     self.extend(other._values)
 
-  def __getslice__(self, start, stop):
-    """Retrieves the subset of items from between the specified indices."""
-    return self._values[start:stop]
-
   def __delitem__(self, key):
-    """Deletes the item at the specified position."""
+    """Deletes the item (or subset of items) at the specified position(s)."""
     del self._values[key]
-    self._message_listener.Modified()
-
-  def __delslice__(self, start, stop):
-    """Deletes the subset of items from between the specified indices."""
-    del self._values[start:stop]
     self._message_listener.Modified()
 
   def __eq__(self, other):

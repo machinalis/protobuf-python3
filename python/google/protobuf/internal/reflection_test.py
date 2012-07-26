@@ -693,6 +693,12 @@ class ReflectionTest(unittest.TestCase):
     del proto.repeated_int32[2:]
     self.assertEqual([5, 35], proto.repeated_int32)
 
+    # Test slice deletion with step.
+    proto.repeated_int32[2:5] = [40, 45, 50]
+    del proto.repeated_int32[1:5:3]
+    self.assertEqual([5, 40, 45], proto.repeated_int32)
+    proto.repeated_int32[0:] = [5, 35]
+
     # Test extending.
     proto.repeated_int32.extend([3, 13])
     self.assertEqual([5, 35, 3, 13], proto.repeated_int32)
@@ -807,6 +813,14 @@ class ReflectionTest(unittest.TestCase):
     # Test slice deletion.
     del proto.repeated_nested_message[2:]
     self.assertListsEqual([m0, m1], proto.repeated_nested_message)
+
+    # Test slice deletion with step.
+    nm0 = proto.repeated_nested_message.add()
+    nm1 = proto.repeated_nested_message.add()
+    nm2 = proto.repeated_nested_message.add()
+    del proto.repeated_nested_message[2:5:2]
+    self.assertListsEqual([m0, m1, nm2], proto.repeated_nested_message)
+    del proto.repeated_nested_message[2]
 
     # Test extending.
     n1 = unittest_pb2.TestAllTypes.NestedMessage(bb=1)
