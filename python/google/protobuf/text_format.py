@@ -431,7 +431,7 @@ class _Tokenizer(object):
     """
     try:
       result = self._ParseInteger(self.token, is_signed=True, is_long=False)
-    except ValueError, e:
+    except ValueError as e:
       raise self._IntegerParseError(e)
     self.NextToken()
     return result
@@ -447,7 +447,7 @@ class _Tokenizer(object):
     """
     try:
       result = self._ParseInteger(self.token, is_signed=False, is_long=False)
-    except ValueError, e:
+    except ValueError as e:
       raise self._IntegerParseError(e)
     self.NextToken()
     return result
@@ -463,7 +463,7 @@ class _Tokenizer(object):
     """
     try:
       result = self._ParseInteger(self.token, is_signed=True, is_long=True)
-    except ValueError, e:
+    except ValueError as e:
       raise self._IntegerParseError(e)
     self.NextToken()
     return result
@@ -479,7 +479,7 @@ class _Tokenizer(object):
     """
     try:
       result = self._ParseInteger(self.token, is_signed=False, is_long=True)
-    except ValueError, e:
+    except ValueError as e:
       raise self._IntegerParseError(e)
     self.NextToken()
     return result
@@ -506,7 +506,7 @@ class _Tokenizer(object):
 
     try:
       result = float(text)
-    except ValueError, e:
+    except ValueError as e:
       raise self._FloatParseError(e)
     self.NextToken()
     return result
@@ -540,8 +540,8 @@ class _Tokenizer(object):
     """
     bytes = self.ConsumeByteString()
     try:
-      return unicode(bytes, 'utf-8')
-    except UnicodeDecodeError, e:
+      return bytes.decode('utf-8')
+    except UnicodeDecodeError as e:
       raise self._StringParseError(e)
 
   def ConsumeByteString(self):
@@ -574,7 +574,7 @@ class _Tokenizer(object):
 
     try:
       result = _CUnescape(text[1:-1])
-    except ValueError, e:
+    except ValueError as e:
       raise self._ParseError(str(e))
     self.NextToken()
     return result

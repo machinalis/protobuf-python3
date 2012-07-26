@@ -408,7 +408,7 @@ class TextFormatTest(unittest.TestCase):
 
     try:
       func(*args, **kwargs)
-    except e_class, expr:
+    except e_class as expr:
       if str(expr) != e:
         msg = '%s raised, but with wrong message: "%s" instead of "%s"'
         raise self.failureException(msg % (exc_name,
