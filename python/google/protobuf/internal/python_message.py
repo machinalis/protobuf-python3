@@ -51,7 +51,7 @@ this file*.
 __author__ = 'robinson@google.com (Will Robinson)'
 
 try:
-  from cStringIO import StringIO
+  from six.moves import cStringIO as StringIO
 except ImportError:
   from StringIO import StringIO
 import struct
