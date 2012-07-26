@@ -60,7 +60,10 @@ class BaseContainer(object):
     self._values = []
 
   def __getitem__(self, key):
-    """Retrieves item by the specified key."""
+    """
+    Retrieves item by the specified key, or the subset of items from between the
+    specified slice if key is such an object.
+    """
     return self._values[key]
 
   def __len__(self):
@@ -144,10 +147,6 @@ class RepeatedScalarFieldContainer(BaseContainer):
     self._type_checker.CheckValue(value)
     self._values[key] = value
     self._message_listener.Modified()
-
-  def __getslice__(self, start, stop):
-    """Retrieves the subset of items from between the specified indices."""
-    return self._values[start:stop]
 
   def __setslice__(self, start, stop, values):
     """Sets the subset of items from between the specified indices."""
@@ -234,10 +233,6 @@ class RepeatedCompositeFieldContainer(BaseContainer):
     one, copying each individual message.
     """
     self.extend(other._values)
-
-  def __getslice__(self, start, stop):
-    """Retrieves the subset of items from between the specified indices."""
-    return self._values[start:stop]
 
   def __delitem__(self, key):
     """Deletes the item at the specified position."""
