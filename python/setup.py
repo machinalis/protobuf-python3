@@ -77,6 +77,7 @@ def MakeTestSuite():
     as service_reflection_test
   import google.protobuf.internal.text_format_test   as text_format_test
   import google.protobuf.internal.wire_format_test   as wire_format_test
+  import google.protobuf.internal.container_test     as container_test
 
   loader = unittest.defaultTestLoader
   suite = unittest.TestSuite()
@@ -85,7 +86,8 @@ def MakeTestSuite():
                 reflection_test,
                 service_reflection_test,
                 text_format_test,
-                wire_format_test ]:
+                wire_format_test,
+                container_test ]:
     suite.addTest(loader.loadTestsFromModule(test))
 
   return suite

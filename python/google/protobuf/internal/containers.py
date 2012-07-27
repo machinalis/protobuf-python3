@@ -49,6 +49,9 @@ class BaseContainer(object):
   # Minimizes memory usage and disallows assignment to other attributes.
   __slots__ = ['_message_listener', '_values']
 
+  # Mark instances as non-hashables
+  __hash__ = None
+
   def __init__(self, message_listener):
     """
     Args:
@@ -71,9 +74,6 @@ class BaseContainer(object):
     """Checks if another instance isn't equal to this one."""
     # The concrete classes should define __eq__.
     return not self == other
-
-  def __hash__(self):
-    raise TypeError('unhashable object')
 
   def __repr__(self):
     return repr(self._values)
