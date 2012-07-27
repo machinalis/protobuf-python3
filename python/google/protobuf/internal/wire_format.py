@@ -32,6 +32,7 @@
 
 __author__ = 'robinson@google.com (Will Robinson)'
 
+import numbers
 import struct
 from google.protobuf import descriptor
 from google.protobuf import message
@@ -102,6 +103,8 @@ def ZigZagEncode(value):
   effectively used with varint encoding.  See wire_format.h for
   more details.
   """
+  if not isinstance(value, numbers.Integral):
+    raise TypeError
   if value >= 0:
     return value << 1
   return (value << 1) ^ (~0)
