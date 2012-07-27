@@ -618,10 +618,9 @@ void Generator::PrintMessages() const {
 // Mutually recursive with PrintNestedMessages().
 void Generator::PrintMessage(
     const Descriptor& message_descriptor) const {
-  printer_->Print("class $name$(message.Message):\n", "name",
+  printer_->Print("class $name$(reflection.BaseGeneratedMessage):\n", "name",
                   message_descriptor.name());
   printer_->Indent();
-  printer_->Print("__metaclass__ = reflection.GeneratedProtocolMessageType\n");
   PrintNestedMessages(message_descriptor);
   map<string, string> m;
   m["descriptor_key"] = kDescriptorKey;
