@@ -55,6 +55,8 @@ from google.protobuf.internal import wire_format
 from google.protobuf.internal import test_util
 from google.protobuf.internal import decoder
 
+from six.moves import xrange
+
 
 class _MiniDecoder(object):
   """Decodes a stream of values from a string.
