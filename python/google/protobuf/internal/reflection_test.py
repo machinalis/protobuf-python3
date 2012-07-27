@@ -1424,7 +1424,7 @@ class ReflectionTest(unittest.TestCase):
     unicode_decode_failed = False
     try:
       message2.MergeFromString(bytes)
-    except UnicodeDecodeError, e:
+    except UnicodeDecodeError as e:
       unicode_decode_failed = True
     string_field = message2.str
     self.assertTrue(unicode_decode_failed or type(string_field) == str)
@@ -2135,7 +2135,7 @@ class SerializationTest(unittest.TestCase):
     """This method checks if the excpetion type and message are as expected."""
     try:
       callable_obj()
-    except exc_class, ex:
+    except exc_class as ex:
       # Check if the exception message is the right one.
       self.assertEqual(exception, str(ex))
       return
