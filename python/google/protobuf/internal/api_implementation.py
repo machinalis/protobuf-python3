@@ -52,7 +52,7 @@ if _implementation_type != 'python':
   #try:
   #  from google.protobuf.internal import cpp_message
   #  _implementation_type = 'cpp'
-  #except ImportError, e:
+  #except ImportError as e:
   #  _implementation_type = 'python'
 
 
