@@ -41,6 +41,8 @@ are:
 
 __author__ = 'petar@google.com (Petar Petrov)'
 
+import six
+import warnings
 
 class BaseContainer(object):
 
@@ -78,8 +80,19 @@ class BaseContainer(object):
   def __repr__(self):
     return repr(self._values)
 
-  def sort(self, sort_function=cmp):
-    self._values.sort(sort_function)
+  def sort(self, sort_function=None, key=None, reverse=False):
+    if sort_function is not None:
+      if key is not None:
+        raise TypeError('sort_function and key can not be used at the same time')
+      if six.PY3:
+        raise TypeError('sort_function not supported in python 3. '
+                        'Use key=... instead')
+      warnings.warn('sort_function will not be supported in python 3. '
+                    'Use key=... instead')
+
+      self._values.sort(sort_function, reverse=reverse)
+    else:
+      self._values.sort(key=key, reverse=reverse)
 
 
 class RepeatedScalarFieldContainer(BaseContainer):

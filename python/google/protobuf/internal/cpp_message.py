@@ -35,6 +35,8 @@ Descriptor objects at runtime backed by the protocol buffer C++ API.
 __author__ = 'petar@google.com (Petar Petrov)'
 
 import operator
+import six
+import warnings
 from google.protobuf.internal import _net_proto2___python
 from google.protobuf import message
 import six
@@ -157,9 +159,21 @@ class RepeatedScalarContainer(object):
   def __hash__(self):
     raise TypeError('unhashable object')
 
-  def sort(self, sort_function=cmp):
-    values = self[slice(None, None, None)]
-    values.sort(sort_function)
+  def sort(self, sort_function=None, key=None, reverse=False):
+    if sort_function is not None:
+      if key is not None:
+        raise TypeError('sort_function and key can not be used at the same time')
+      if six.PY3:
+        raise TypeError('sort_function not supported in python 3. '
+                        'Use key=... instead')
+      warnings.warn('sort_function will not be supported in python 3. '
+                    'Use key=... instead')
+
+    values = self[:]
+    if sort_function is not None:
+      values.sort(sort_function, reverse=reverse)
+    else:
+      values.sort(key=key, reverse=reverse)
     self._cmsg.AssignRepeatedScalar(self._cfield_descriptor, values)
 
 
@@ -237,14 +251,26 @@ class RepeatedCompositeContainer(object):
   def __hash__(self):
     raise TypeError('unhashable object')
 
-  def sort(self, sort_function=cmp):
+  def sort(self, sort_function=None, key=None, reverse=False):
+    if sort_function is not None:
+      if key is not None:
+        raise TypeError('sort_function and key can not be used at the same time')
+      if six.PY3:
+        raise TypeError('sort_function not supported in python 3. '
+                        'Use key=... instead')
+      warnings.warn('sort_function will not be supported in python 3. '
+                    'Use key=... instead')
     messages = []
     for index in range(len(self)):
       # messages[i][0] is where the i-th element of the new array has to come
       # from.
       # messages[i][1] is where the i-th element of the old array has to go.
       messages.append([index, 0, self[index]])
-    messages.sort(lambda x,y: sort_function(x[2], y[2]))
+    if sort_function is not None:
+      messages.sort(lambda x, y: sort_function(x[2], y[2]), reverse=reverse)
+    else:
+      if key is None: key = lambda x:x # identity
+      messages.sort(key=lambda x: key(x[2]), reverse=reverse)
 
     # Remember which position each elements has to move to.
     for i in range(len(messages)):
