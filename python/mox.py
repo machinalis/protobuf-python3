@@ -306,10 +306,12 @@ class MockAnything:
     return MockMethod(method_name, self._expected_calls_queue,
                       self._replay_mode)
 
-  def __nonzero__(self):
-    """Return 1 for nonzero so the mock can be used as a conditional."""
+   def __bool__(self):
+    """Return True for bool so the mock can be used as a conditional."""
 
-    return 1
+    return True
+  # Definition of nonzero for portability.
+  __nonzero__= __bool__
 
   def __eq__(self, rhs):
     """Provide custom logic to compare objects."""
