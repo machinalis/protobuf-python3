@@ -50,6 +50,7 @@ __author__ = 'robinson@google.com (Will Robinson)'
 
 from google.protobuf.internal import api_implementation
 from google.protobuf import descriptor as descriptor_mod
+from google.protobuf import message
 _FieldDescriptor = descriptor_mod.FieldDescriptor
 
 
@@ -111,12 +112,15 @@ class GeneratedProtocolMessageType(type):
     Returns:
       Newly-allocated class.
     """
-    descriptor = dictionary[GeneratedProtocolMessageType._DESCRIPTOR_KEY]
-    _NewMessage(descriptor, dictionary)
+    abstract = dictionary.get('_ABSTRACT', False)
     superclass = super(GeneratedProtocolMessageType, cls)
-
-    new_class = superclass.__new__(cls, name, bases, dictionary)
-    setattr(descriptor, '_concrete_class', new_class)
+    if not abstract:
+      descriptor = dictionary[GeneratedProtocolMessageType._DESCRIPTOR_KEY]
+      _NewMessage(descriptor, dictionary)
+      new_class = superclass.__new__(cls, name, bases, dictionary)
+      setattr(descriptor, '_concrete_class', new_class)
+    else:
+      new_class = superclass.__new__(cls, name, bases, dictionary)
     return new_class
 
   def __init__(cls, name, bases, dictionary):
@@ -136,7 +140,30 @@ class GeneratedProtocolMessageType(type):
         a Descriptor object describing this protocol message
         type.
     """
-    descriptor = dictionary[GeneratedProtocolMessageType._DESCRIPTOR_KEY]
-    _InitMessage(descriptor, cls)
+    abstract = dictionary.get('_ABSTRACT', False)
     superclass = super(GeneratedProtocolMessageType, cls)
+    if not abstract:
+      descriptor = dictionary[GeneratedProtocolMessageType._DESCRIPTOR_KEY]
+      _InitMessage(descriptor, cls)
     superclass.__init__(name, bases, dictionary)
+
+# Base class for messages incorporating the metaclass. We use this unusual
+# way of creating the class to be compatible with both Python 2 and Python 3
+# The code below should be equivalent to:
+#
+# class BaseGeneratedMessage(message.Message):
+#   __metaclass__ = GeneratedProtocolMessageType
+#   __slots__ = ()
+#   _ABSTRACT = True
+#
+# The "_ABSTRACT" = True tells the metaclass that it should not look for a
+# descriptor attribute.
+BaseGeneratedMessage = GeneratedProtocolMessageType(
+  "BaseGeneratedMessage",
+  (message.Message,),
+  {
+    '__slots__': (),
+    '_ABSTRACT': True,
+  }
+)
+
