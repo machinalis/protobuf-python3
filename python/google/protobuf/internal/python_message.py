@@ -51,6 +51,7 @@ this file*.
 __author__ = 'robinson@google.com (Will Robinson)'
 
 import six
+from six.moves import xrange
 
 
 try:
