@@ -307,7 +307,7 @@ class MessageTest(unittest.TestCase):
     message.repeated_int32.append(-3)
     message.repeated_int32.append(-2)
     message.repeated_int32.append(-1)
-    message.repeated_int32.sort(lambda x,y: cmp(abs(x), abs(y)))
+    message.repeated_int32.sort(key=abs)
     self.assertEqual(message.repeated_int32[0], -1)
     self.assertEqual(message.repeated_int32[1], -2)
     self.assertEqual(message.repeated_int32[2], -3)
@@ -315,7 +315,7 @@ class MessageTest(unittest.TestCase):
     message.repeated_string.append('aaa')
     message.repeated_string.append('bb')
     message.repeated_string.append('c')
-    message.repeated_string.sort(lambda x,y: cmp(len(x), len(y)))
+    message.repeated_string.sort(key=len)
     self.assertEqual(message.repeated_string[0], 'c')
     self.assertEqual(message.repeated_string[1], 'bb')
     self.assertEqual(message.repeated_string[2], 'aaa')
@@ -330,7 +330,7 @@ class MessageTest(unittest.TestCase):
     message.repeated_nested_message.add().bb = 6
     message.repeated_nested_message.add().bb = 5
     message.repeated_nested_message.add().bb = 4
-    message.repeated_nested_message.sort(lambda x,y: cmp(x.bb, y.bb))
+    message.repeated_nested_message.sort(key=lambda x: x.bb)
     self.assertEqual(message.repeated_nested_message[0].bb, 1)
     self.assertEqual(message.repeated_nested_message[1].bb, 2)
     self.assertEqual(message.repeated_nested_message[2].bb, 3)
