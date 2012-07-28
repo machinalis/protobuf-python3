@@ -114,21 +114,21 @@ class UnicodeValueChecker(object):
   """Checker used for string fields."""
 
   def CheckValue(self, proposed_value):
-    if not isinstance(proposed_value, (str, unicode)):
+    if not isinstance(proposed_value, (bytes, six.text_type)):
       message = ('%.1024r has type %s, but expected one of: %s' %
-                 (proposed_value, type(proposed_value), (str, unicode)))
+                 (proposed_value, type(proposed_value), (bytes, six.text_type)))
       raise TypeError(message)
 
-    # If the value is of type 'str' make sure that it is in 7-bit ASCII
-    # encoding.
-    if isinstance(proposed_value, str):
+    # If the value is of type 'bytes' ('str' in Python 2.x) make sure that it
+    # is in 7-bit ASCII encoding.
+    if isinstance(proposed_value, bytes):
       try:
-        unicode(proposed_value, 'ascii')
+        proposed_value.decode('ascii')
       except UnicodeDecodeError:
-        raise ValueError('%.1024r has type str, but isn\'t in 7-bit ASCII '
+        raise ValueError('%.1024r has type %s, but isn\'t in 7-bit ASCII '
                          'encoding. Non-ASCII strings must be converted to '
                          'unicode objects before being added.' %
-                         (proposed_value))
+                         (proposed_value, type(proposed_value)))
 
 
 class Int32ValueChecker(IntValueChecker):
