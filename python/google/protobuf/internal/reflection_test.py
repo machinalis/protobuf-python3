@@ -55,6 +55,7 @@ from google.protobuf.internal import wire_format
 from google.protobuf.internal import test_util
 from google.protobuf.internal import decoder
 
+import six
 from six.moves import xrange
 
 
@@ -1353,14 +1354,14 @@ class ReflectionTest(unittest.TestCase):
                       setattr, proto, 'optional_bytes', u'unicode object')
 
     # Check that the default value is of python's 'unicode' type.
-    self.assertEqual(type(proto.optional_string), unicode)
+    self.assertEqual(type(proto.optional_string), six.text_type)
 
-    proto.optional_string = unicode('Testing')
+    proto.optional_string = u'Testing'
     self.assertEqual(proto.optional_string, str('Testing'))
 
     # Assign a value of type 'str' which can be encoded in UTF-8.
     proto.optional_string = str('Testing')
-    self.assertEqual(proto.optional_string, unicode('Testing'))
+    self.assertEqual(proto.optional_string, u'Testing')
 
     if api_implementation.Type() == 'python':
       # Values of type 'str' are also accepted as long as they can be
@@ -1408,7 +1409,7 @@ class ReflectionTest(unittest.TestCase):
         raw.item[0].message.endswith(test_utf8_bytes))
     message2.MergeFromString(raw.item[0].message)
 
-    self.assertEqual(type(message2.str), unicode)
+    self.assertEqual(type(message2.str), six.text_type)
     self.assertEqual(message2.str, test_utf8)
 
     # The pure Python API throws an exception on MergeFromString(),
