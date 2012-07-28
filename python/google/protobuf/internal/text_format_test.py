@@ -1,4 +1,5 @@
 #! /usr/bin/python
+from __future__ import unicode_literals
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -35,6 +36,7 @@
 __author__ = 'kenton@google.com (Kenton Varda)'
 
 import difflib
+import six
 import re
 
 import unittest
@@ -61,8 +63,8 @@ class TextFormatTest(unittest.TestCase):
   def CompareToGoldenLines(self, text, golden_lines):
     actual_lines = text.splitlines(1)
     self.assertEqual(golden_lines, actual_lines,
-      "Text doesn't match golden.  Diff:\n" +
-      ''.join(difflib.ndiff(golden_lines, actual_lines)))
+      b"Text doesn't match golden.  Diff:\n" +
+      b''.join(difflib.ndiff(golden_lines, actual_lines)))
 
   def testPrintAllFields(self):
     message = unittest_pb2.TestAllTypes()
@@ -102,7 +104,7 @@ class TextFormatTest(unittest.TestCase):
     message.repeated_double.append(1.23e22)
     message.repeated_double.append(1.23e-18)
     message.repeated_string.append('\000\001\a\b\f\n\r\t\v\\\'"')
-    message.repeated_string.append(u'\u00fc\ua71f')
+    message.repeated_string.append('\u00fc\ua71f')
     self.CompareToGoldenText(
       self.RemoveRedundantZeros(text_format.MessageToString(message)),
       'repeated_int64: -9223372036854775808\n'
@@ -166,7 +168,7 @@ class TextFormatTest(unittest.TestCase):
     message.repeated_double.append(1.23e22)
     message.repeated_double.append(1.23e-18)
     message.repeated_string.append('\000\001\a\b\f\n\r\t\v\\\'"')
-    message.repeated_string.append(u'\u00fc\ua71f')
+    message.repeated_string.append('\u00fc\ua71f')
     self.CompareToGoldenText(
       self.RemoveRedundantZeros(
           text_format.MessageToString(message, as_one_line=True)),
@@ -187,7 +189,7 @@ class TextFormatTest(unittest.TestCase):
     message.repeated_double.append(1.23e22)
     message.repeated_double.append(1.23e-18)
     message.repeated_string.append('\000\001\a\b\f\n\r\t\v\\\'"')
-    message.repeated_string.append(u'\u00fc\ua71f')
+    message.repeated_string.append('\u00fc\ua71f')
 
     # Test as_utf8 = False.
     wire_text = text_format.MessageToString(
@@ -205,9 +207,9 @@ class TextFormatTest(unittest.TestCase):
 
   def testPrintRawUtf8String(self):
     message = unittest_pb2.TestAllTypes()
-    message.repeated_string.append(u'\u00fc\ua71f')
+    message.repeated_string.append('\u00fc\ua71f')
     text = text_format.MessageToString(message, as_utf8 = True)
-    self.CompareToGoldenText(text, 'repeated_string: "\303\274\352\234\237"\n')
+    self.CompareToGoldenText(text, b'repeated_string: "\303\274\352\234\237"\n')
     parsed_message = unittest_pb2.TestAllTypes()
     text_format.Merge(text, parsed_message)
     self.assertEquals(message, parsed_message)
@@ -290,17 +292,17 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeExotic(self):
     message = unittest_pb2.TestAllTypes()
-    text = ('repeated_int64: -9223372036854775808\n'
-            'repeated_uint64: 18446744073709551615\n'
-            'repeated_double: 123.456\n'
-            'repeated_double: 1.23e+22\n'
-            'repeated_double: 1.23e-18\n'
-            'repeated_string: \n'
-            '"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""\n'
-            'repeated_string: "foo" \'corge\' "grault"\n'
-            'repeated_string: "\\303\\274\\352\\234\\237"\n'
-            'repeated_string: "\\xc3\\xbc"\n'
-            'repeated_string: "\xc3\xbc"\n')
+    text = (b'repeated_int64: -9223372036854775808\n'
+            b'repeated_uint64: 18446744073709551615\n'
+            b'repeated_double: 123.456\n'
+            b'repeated_double: 1.23e+22\n'
+            b'repeated_double: 1.23e-18\n'
+            b'repeated_string: \n'
+            b'"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""\n'
+            b'repeated_string: "foo" \'corge\' "grault"\n'
+            b'repeated_string: "\\303\\274\\352\\234\\237"\n'
+            b'repeated_string: "\\xc3\\xbc"\n'
+            b'repeated_string: "\xc3\xbc"\n')
     text_format.Merge(text, message)
 
     self.assertEqual(-9223372036854775808, message.repeated_int64[0])
@@ -311,8 +313,8 @@ class TextFormatTest(unittest.TestCase):
     self.assertEqual(
         '\000\001\a\b\f\n\r\t\v\\\'"', message.repeated_string[0])
     self.assertEqual('foocorgegrault', message.repeated_string[1])
-    self.assertEqual(u'\u00fc\ua71f', message.repeated_string[2])
-    self.assertEqual(u'\u00fc', message.repeated_string[3])
+    self.assertEqual('\u00fc\ua71f', message.repeated_string[2])
+    self.assertEqual('\u00fc', message.repeated_string[3])
 
   def testMergeEmptyText(self):
     message = unittest_pb2.TestAllTypes()
@@ -495,7 +497,7 @@ class TokenizerTest(unittest.TestCase):
     i = 0
     while not tokenizer.AtEnd():
       m = methods[i]
-      if type(m) == str:
+      if type(m) == six.text_type:
         token = tokenizer.token
         self.assertEqual(token, m)
         tokenizer.NextToken()

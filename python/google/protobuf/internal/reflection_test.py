@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -511,7 +512,7 @@ class ReflectionTest(unittest.TestCase):
                      proto.default_import_enum)
 
     proto = unittest_pb2.TestExtremeDefaultValues()
-    self.assertEqual(u'\u1234', proto.utf8_string)
+    self.assertEqual('\u1234', proto.utf8_string)
 
   def testHasFieldWithUnknownFieldName(self):
     proto = unittest_pb2.TestAllTypes()
@@ -1351,29 +1352,29 @@ class ReflectionTest(unittest.TestCase):
 
     # Assignment of a unicode object to a field of type 'bytes' is not allowed.
     self.assertRaises(TypeError,
-                      setattr, proto, 'optional_bytes', u'unicode object')
+                      setattr, proto, 'optional_bytes', 'unicode object')
 
     # Check that the default value is of python's 'unicode' type.
     self.assertEqual(type(proto.optional_string), six.text_type)
 
-    proto.optional_string = u'Testing'
+    proto.optional_string = 'Testing'
     self.assertEqual(proto.optional_string, str('Testing'))
 
     # Assign a value of type 'str' which can be encoded in UTF-8.
     proto.optional_string = str('Testing')
-    self.assertEqual(proto.optional_string, u'Testing')
+    self.assertEqual(proto.optional_string, 'Testing')
 
     if api_implementation.Type() == 'python':
-      # Values of type 'str' are also accepted as long as they can be
+      # Values of type 'bytes' are also accepted as long as they can be
       # encoded in UTF-8.
-      self.assertEqual(type(proto.optional_string), str)
+      self.assertEqual(type(proto.optional_string), bytes)
 
-    # Try to assign a 'str' value which contains bytes that aren't 7-bit ASCII.
+    # Try to assign a 'bytes' value which contains bytes that aren't 7-bit ASCII.
     self.assertRaises(ValueError,
-                      setattr, proto, 'optional_string', str('a\x80a'))
-    # Assign a 'str' object which contains a UTF-8 encoded string.
+                      setattr, proto, 'optional_string', b'a\x80a')
+    # Assign a 'bytes' object which contains a UTF-8 encoded string.
     self.assertRaises(ValueError,
-                      setattr, proto, 'optional_string', 'Тест')
+                      setattr, proto, 'optional_string', 'Тест'.encode('utf-8'))
     # No exception thrown.
     proto.optional_string = 'abc'
 
@@ -1382,7 +1383,7 @@ class ReflectionTest(unittest.TestCase):
     extension_message = unittest_mset_pb2.TestMessageSetExtension2
     extension = extension_message.message_set_extension
 
-    test_utf8 = u'Тест'
+    test_utf8 = 'Тест'
     test_utf8_bytes = test_utf8.encode('utf-8')
 
     # 'Test' in another language, using UTF-8 charset.
@@ -1418,9 +1419,9 @@ class ReflectionTest(unittest.TestCase):
     # MergeFromString and thus has no way to throw the exception.
     #
     # The pure Python API always returns objects of type 'unicode' (UTF-8
-    # encoded), or 'str' (in 7 bit ASCII).
+    # encoded), or 'bytes' (in 7 bit ASCII).
     bytes = raw.item[0].message.replace(
-        test_utf8_bytes, len(test_utf8_bytes) * '\xff')
+        test_utf8_bytes, len(test_utf8_bytes) * b'\xff')
 
     unicode_decode_failed = False
     try:
@@ -2339,7 +2340,7 @@ class SerializationTest(unittest.TestCase):
         optional_int32=1,
         optional_string='foo',
         optional_bool=True,
-        optional_bytes='bar',
+        optional_bytes=b'bar',
         optional_nested_message=unittest_pb2.TestAllTypes.NestedMessage(bb=1),
         optional_foreign_message=unittest_pb2.ForeignMessage(c=1),
         optional_nested_enum=unittest_pb2.TestAllTypes.FOO,
