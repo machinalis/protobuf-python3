@@ -85,6 +85,7 @@ from google.protobuf.internal import encoder
 from google.protobuf.internal import wire_format
 from google.protobuf import message
 
+import six
 
 # This will overflow and thus become IEEE-754 "infinity".  We would use
 # "float('inf')" but it doesn't work on Windows pre-Python-2.6.
@@ -108,7 +109,12 @@ def _VarintDecoder(mask):
   decoder returns a (value, new_pos) pair.
   """
 
-  local_ord = ord
+  if six.PY3:
+    # On python 3, buffer items are already ints, so there is no need to ord() them
+    local_ord = lambda x: x
+  else:
+    local_ord = ord
+
   def DecodeVarint(buffer, pos):
     result = 0
     shift = 0
@@ -128,7 +134,12 @@ def _VarintDecoder(mask):
 def _SignedVarintDecoder(mask):
   """Like _VarintDecoder() but decodes signed values."""
 
-  local_ord = ord
+  if six.PY3:
+    # On python 3, buffer items are already ints, so there is no need to ord() them
+    local_ord = lambda x: x
+  else:
+    local_ord = ord
+
   def DecodeVarint(buffer, pos):
     result = 0
     shift = 0
@@ -168,8 +179,14 @@ def ReadTag(buffer, pos):
   use that, but not in Python.
   """
 
+  if six.PY3:
+    # On python 3, buffer items are already ints, so there is no need to ord() them
+    local_ord = lambda x: x
+  else:
+    local_ord = ord
+
   start = pos
-  while ord(buffer[pos]) & 0x80:
+  while local_ord(buffer[pos]) & 0x80:
     pos += 1
   pos += 1
   return (buffer[start:pos], pos)
@@ -625,7 +642,13 @@ def MessageSetItemDecoder(extensions_by_number):
 def _SkipVarint(buffer, pos, end):
   """Skip a varint value.  Returns the new position."""
 
-  while ord(buffer[pos]) & 0x80:
+  if six.PY3:
+    # On python 3, buffer items are already ints, so there is no need to ord() them
+    local_ord = lambda x: x
+  else:
+    local_ord = ord
+
+  while local_ord(buffer[pos]) & 0x80:
     pos += 1
   pos += 1
   if pos > end:
@@ -692,7 +715,11 @@ def _FieldSkipper():
       ]
 
   wiretype_mask = wire_format.TAG_TYPE_MASK
-  local_ord = ord
+  if six.PY3:
+    # On python 3, buffer items are already ints, so there is no need to ord() them
+    local_ord = lambda x: x
+  else:
+    local_ord = ord
 
   def SkipField(buffer, pos, end, tag_bytes):
     """Skips a field with the specified tag.
