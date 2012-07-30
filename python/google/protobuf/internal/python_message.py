@@ -54,10 +54,13 @@ import six
 from six.moves import xrange
 
 
-try:
-  from six.moves import cStringIO as StringIO
-except ImportError:
-  from StringIO import StringIO
+if six.PY3:
+  from io import BytesIO
+else:
+  try:
+    from cStringIO import StringIO as BytesIO
+  except ImportError:
+    from StringIO import StringIO as BytesIO
 import struct
 import weakref
 
@@ -740,7 +743,7 @@ def _AddSerializePartialToStringMethod(message_descriptor, cls):
   """Helper for _AddMessageMethods()."""
 
   def SerializePartialToString(self):
-    out = StringIO()
+    out = BytesIO()
     self._InternalSerialize(out.write)
     return out.getvalue()
   cls.SerializePartialToString = SerializePartialToString
