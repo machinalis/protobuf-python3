@@ -128,7 +128,7 @@ def PrintFieldValue(field, value, out, indent=0,
     out.write(field.enum_type.values_by_number[value].name)
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_STRING:
     out.write('\"')
-    if type(value) is unicode:
+    if type(value) is six.text_type:
       out.write(_CEscape(value.encode('utf-8'), as_utf8))
     else:
       out.write(_CEscape(value, as_utf8))
