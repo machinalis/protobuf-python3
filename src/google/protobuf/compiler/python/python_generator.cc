@@ -303,7 +303,7 @@ void Generator::PrintFileDescriptor() const {
   printer_->Print(m, file_descriptor_template);
   printer_->Indent();
   printer_->Print(
-      "serialized_pb='$value$'",
+      "serialized_pb=b'$value$'",
       "value", strings::CHexEscape(file_descriptor_serialized_));
 
   // TODO(falk): Also print options and fix the message_type, enum_type,
@@ -847,7 +847,7 @@ string Generator::OptionsValue(
     return "None";
   } else {
     string full_class_name = "descriptor_pb2." + class_name;
-    return "descriptor._ParseOptions(" + full_class_name + "(), '"
+    return "descriptor._ParseOptions(" + full_class_name + "(), b'"
         + CEscape(serialized_options)+ "')";
   }
 }
