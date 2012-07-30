@@ -6,7 +6,7 @@
 # namespace_packages option for the "google" package.
 from __future__ import print_function
 
-from ez_setup import use_setuptools
+from distribute_setup import use_setuptools
 use_setuptools()
 
 from setuptools import setup, Extension
@@ -123,6 +123,9 @@ if __name__ == '__main__':
 
   setup(name = 'protobuf',
         version = '2.4.1-pre',
+        classifiers=['Programming Language :: Python',
+                     'Programming Language :: Python :: 3'
+                     ],
         packages = [ 'google' ],
         namespace_packages = [ 'google' ],
         test_suite = 'setup.MakeTestSuite',
