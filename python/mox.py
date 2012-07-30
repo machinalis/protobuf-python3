@@ -65,6 +65,7 @@ import types
 import unittest
 
 import stubout
+import six
 
 class Error(AssertionError):
   """Base exception for this module."""
@@ -306,7 +307,7 @@ class MockAnything:
     return MockMethod(method_name, self._expected_calls_queue,
                       self._replay_mode)
 
-   def __bool__(self):
+  def __bool__(self):
     """Return True for bool so the mock can be used as a conditional."""
 
     return True
@@ -1388,7 +1389,8 @@ class MoxMetaTestBase(type):
     return new_method
 
 
-class MoxTestBase(unittest.TestCase):
+
+class MoxTestBase(six.with_metaclass(MoxMetaTestBase, unittest.TestCase)):
   """Convenience test class to make stubbing easier.
 
   Sets up a "mox" attribute which is an instance of Mox - any mox tests will
@@ -1396,8 +1398,6 @@ class MoxTestBase(unittest.TestCase):
   methods have been called at the end of each test, eliminating boilerplate
   code.
   """
-
-  __metaclass__ = MoxMetaTestBase
 
   def setUp(self):
     self.mox = Mox()

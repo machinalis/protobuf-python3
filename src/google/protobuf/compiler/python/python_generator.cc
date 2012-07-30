@@ -491,28 +491,33 @@ void Generator::PrintServiceDescriptor(
 
 void Generator::PrintServiceClass(const ServiceDescriptor& descriptor) const {
   // Print the service.
-  printer_->Print("class $class_name$(service.Service):\n",
+  // Use the metaclass(name, base, dict) syntax for python3 compatibility
+  printer_->Print("$class_name$ = service_reflection.GeneratedServiceType(\"$class_name$\",\n",
                   "class_name", descriptor.name());
   printer_->Indent();
   printer_->Print(
-      "__metaclass__ = service_reflection.GeneratedServiceType\n"
-      "$descriptor_key$ = $descriptor_name$\n",
+    "(service.Service,),\n"
+    "{\"$descriptor_key$\": $descriptor_name$},\n",
       "descriptor_key", kDescriptorKey,
       "descriptor_name", ModuleLevelServiceDescriptorName(descriptor));
   printer_->Outdent();
+  printer_->Print(")\n");
 }
 
 void Generator::PrintServiceStub(const ServiceDescriptor& descriptor) const {
   // Print the service stub.
-  printer_->Print("class $class_name$_Stub($class_name$):\n",
+  // Use the metaclass(name, base, dict) syntax for python3 compatibility
+  printer_->Print("$class_name$_Stub = service_reflection.GeneratedServiceStubType(\"$class_name$_Stub\",\n",
                   "class_name", descriptor.name());
   printer_->Indent();
   printer_->Print(
-      "__metaclass__ = service_reflection.GeneratedServiceStubType\n"
-      "$descriptor_key$ = $descriptor_name$\n",
+    "($class_name$,),\n"
+    "{\"$descriptor_key$\": $descriptor_name$},\n",
+      "class_name", descriptor.name(),
       "descriptor_key", kDescriptorKey,
       "descriptor_name", ModuleLevelServiceDescriptorName(descriptor));
   printer_->Outdent();
+  printer_->Print(")\n");
 }
 
 // Prints statement assigning ModuleLevelDescriptorName(message_descriptor)
