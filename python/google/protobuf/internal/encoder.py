@@ -69,6 +69,7 @@ __author__ = 'kenton@google.com (Kenton Varda)'
 import struct
 from google.protobuf.internal import wire_format
 
+import six
 
 # This will overflow and thus become IEEE-754 "infinity".  We would use
 # "float('inf')" but it doesn't work on Windows pre-Python-2.6.
@@ -340,7 +341,10 @@ def MessageSetItemSizer(field_number):
 def _VarintEncoder():
   """Return an encoder for a basic varint value (does not include tag)."""
 
-  local_chr = chr
+  if six.PY3:
+    local_chr = lambda x: bytes([x])
+  else:
+    local_chr = chr
   def EncodeVarint(write, value):
     bits = value & 0x7f
     value >>= 7
@@ -357,7 +361,10 @@ def _SignedVarintEncoder():
   """Return an encoder for a basic signed varint value (does not include
   tag)."""
 
-  local_chr = chr
+  if six.PY3:
+    local_chr = lambda x: bytes([x])
+  else:
+    local_chr = chr
   def EncodeSignedVarint(write, value):
     if value < 0:
       value += (1 << 64)
@@ -382,7 +389,7 @@ def _VarintBytes(value):
 
   pieces = []
   _EncodeVarint(pieces.append, value)
-  return "".join(pieces)
+  return b"".join(pieces)
 
 
 def TagBytes(field_number, wire_type):
@@ -615,8 +622,8 @@ DoubleEncoder   = _FloatingPointEncoder(wire_format.WIRETYPE_FIXED64, '<d')
 def BoolEncoder(field_number, is_repeated, is_packed):
   """Returns an encoder for a boolean field."""
 
-  false_byte = chr(0)
-  true_byte = chr(1)
+  false_byte = b'\x00'
+  true_byte = b'\x01'
   if is_packed:
     tag_bytes = TagBytes(field_number, wire_format.WIRETYPE_LENGTH_DELIMITED)
     local_EncodeVarint = _EncodeVarint
@@ -752,7 +759,7 @@ def MessageSetItemEncoder(field_number):
       }
     }
   """
-  start_bytes = "".join([
+  start_bytes = b"".join([
       TagBytes(1, wire_format.WIRETYPE_START_GROUP),
       TagBytes(2, wire_format.WIRETYPE_VARINT),
       _VarintBytes(field_number),
