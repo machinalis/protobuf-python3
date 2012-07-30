@@ -81,33 +81,33 @@ def PrintField(field, value, out, indent=0, as_utf8=False, as_one_line=False):
   """Print a single field name/value pair.  For repeated fields, the value
   should be a single element."""
 
-  out.write(' ' * indent);
+  out.write(b' ' * indent);
   if field.is_extension:
-    out.write('[')
+    out.write(b'[')
     if (field.containing_type.GetOptions().message_set_wire_format and
         field.type == descriptor.FieldDescriptor.TYPE_MESSAGE and
         field.message_type == field.extension_scope and
         field.label == descriptor.FieldDescriptor.LABEL_OPTIONAL):
-      out.write(field.message_type.full_name)
+      out.write(field.message_type.full_name.encode('ascii'))
     else:
-      out.write(field.full_name)
-    out.write(']')
+      out.write(field.full_name.encode('ascii'))
+    out.write(b']')
   elif field.type == descriptor.FieldDescriptor.TYPE_GROUP:
     # For groups, use the capitalized name.
     out.write(field.message_type.name)
   else:
-    out.write(field.name)
+    out.write(field.name.encode('ascii'))
 
   if field.cpp_type != descriptor.FieldDescriptor.CPPTYPE_MESSAGE:
     # The colon is optional in this case, but our cross-language golden files
     # don't include it.
-    out.write(': ')
+    out.write(b': ')
 
   PrintFieldValue(field, value, out, indent, as_utf8, as_one_line)
   if as_one_line:
-    out.write(' ')
+    out.write(b' ')
   else:
-    out.write('\n')
+    out.write(b'\n')
 
 
 def PrintFieldValue(field, value, out, indent=0,
@@ -117,29 +117,29 @@ def PrintFieldValue(field, value, out, indent=0,
 
   if field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_MESSAGE:
     if as_one_line:
-      out.write(' { ')
+      out.write(b' { ')
       PrintMessage(value, out, indent, as_utf8, as_one_line)
-      out.write('}')
+      out.write(b'}')
     else:
-      out.write(' {\n')
+      out.write(b' {\n')
       PrintMessage(value, out, indent + 2, as_utf8, as_one_line)
-      out.write(' ' * indent + '}')
+      out.write(b' ' * indent + b'}')
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_ENUM:
     out.write(field.enum_type.values_by_number[value].name)
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_STRING:
-    out.write('\"')
+    out.write(b'\"')
     if type(value) is six.text_type:
       out.write(_CEscape(value.encode('utf-8'), as_utf8))
     else:
       out.write(_CEscape(value, as_utf8))
-    out.write('\"')
+    out.write(b'\"')
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_BOOL:
     if value:
-      out.write("true")
+      out.write(b"true")
     else:
-      out.write("false")
+      out.write(b"false")
   else:
-    out.write(str(value))
+    out.write(str(value).encode('ascii'))
 
 
 def Merge(text, message):
