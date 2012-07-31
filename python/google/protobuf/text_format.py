@@ -168,9 +168,9 @@ def _MergeField(tokenizer, message):
     ParseError: In case of ASCII parsing problems.
   """
   message_descriptor = message.DESCRIPTOR
-  if tokenizer.TryConsume('['):
+  if tokenizer.TryConsume(b'['):
     name = [tokenizer.ConsumeIdentifier()]
-    while tokenizer.TryConsume('.'):
+    while tokenizer.TryConsume(b'.'):
       name.append(tokenizer.ConsumeIdentifier())
     name = '.'.join(name)
 
@@ -186,10 +186,10 @@ def _MergeField(tokenizer, message):
       raise tokenizer.ParseErrorPreviousToken(
           'Extension "%s" does not extend message type "%s".' % (
               name, message_descriptor.full_name))
-    tokenizer.Consume(']')
+    tokenizer.Consume(b']')
   else:
     name = tokenizer.ConsumeIdentifier()
-    field = message_descriptor.fields_by_name.get(name, None)
+    field = message_descriptor.fields_by_name.get(name.decode('ascii'), None)
 
     # Group names are expected to be capitalized as they appear in the
     # .proto file, which actually matches their type names, not their field
@@ -209,13 +209,13 @@ def _MergeField(tokenizer, message):
               message_descriptor.full_name, name))
 
   if field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_MESSAGE:
-    tokenizer.TryConsume(':')
+    tokenizer.TryConsume(b':')
 
-    if tokenizer.TryConsume('<'):
-      end_token = '>'
+    if tokenizer.TryConsume(b'<'):
+      end_token = b'>'
     else:
-      tokenizer.Consume('{')
-      end_token = '}'
+      tokenizer.Consume(b'{')
+      end_token = b'}'
 
     if field.label == descriptor.FieldDescriptor.LABEL_REPEATED:
       if field.is_extension:
@@ -249,7 +249,7 @@ def _MergeScalarField(tokenizer, message, field):
     ParseError: In case of ASCII parsing problems.
     RuntimeError: On runtime errors.
   """
-  tokenizer.Consume(':')
+  tokenizer.Consume(b':')
   value = None
 
   if field.type in (descriptor.FieldDescriptor.TYPE_INT32,
@@ -318,19 +318,19 @@ class _Tokenizer(object):
   It was directly ported from the Java protocol buffer API.
   """
 
-  _WHITESPACE = re.compile('(\\s|(#.*$))+', re.MULTILINE)
+  _WHITESPACE = re.compile(b'(\\s|(#.*$))+', re.MULTILINE)
   _TOKEN = re.compile(
-      '[a-zA-Z_][0-9a-zA-Z_+-]*|'           # an identifier
-      '[0-9+-][0-9a-zA-Z_.+-]*|'            # a number
-      '\"([^\"\n\\\\]|\\\\.)*(\"|\\\\?$)|'  # a double-quoted string
-      '\'([^\'\n\\\\]|\\\\.)*(\'|\\\\?$)')  # a single-quoted string
-  _IDENTIFIER = re.compile('\w+')
+      b'[a-zA-Z_][0-9a-zA-Z_+-]*|'           # an identifier
+      b'[0-9+-][0-9a-zA-Z_.+-]*|'            # a number
+      b'\"([^\"\n\\\\]|\\\\.)*(\"|\\\\?$)|'  # a double-quoted string
+      b'\'([^\'\n\\\\]|\\\\.)*(\'|\\\\?$)')  # a single-quoted string
+  _IDENTIFIER = re.compile(b'\w+')
   _INTEGER_CHECKERS = [type_checkers.Uint32ValueChecker(),
                        type_checkers.Int32ValueChecker(),
                        type_checkers.Uint64ValueChecker(),
                        type_checkers.Int64ValueChecker()]
-  _FLOAT_INFINITY = re.compile('-?inf(inity)?f?', re.IGNORECASE)
-  _FLOAT_NAN = re.compile("nanf?", re.IGNORECASE)
+  _FLOAT_INFINITY = re.compile(b'-?inf(inity)?f?', re.IGNORECASE)
+  _FLOAT_NAN = re.compile(b"nanf?", re.IGNORECASE)
 
   def __init__(self, text_message):
     self._text_message = text_message
@@ -339,7 +339,7 @@ class _Tokenizer(object):
     self._line = -1
     self._column = 0
     self._token_start = None
-    self.token = ''
+    self.token = b''
     self._lines = deque(text_message.split(b'\n'))
     self._current_line = ''
     self._previous_line = 0
@@ -407,8 +407,8 @@ class _Tokenizer(object):
     """
     if not self.token:
       return False
-    c = self.token[0]
-    return (c >= '0' and c <= '9') or c == '-' or c == '+'
+    c = self.token[0:1]
+    return (c >= b'0' and c <= b'9') or c == b'-' or c == b'+'
 
   def ConsumeIdentifier(self):
     """Consumes protocol message field identifier.
@@ -501,7 +501,7 @@ class _Tokenizer(object):
     text = self.token
     if self._FLOAT_INFINITY.match(text):
       self.NextToken()
-      if text.startswith('-'):
+      if text.startswith(b'-'):
         return -_INFINITY
       return _INFINITY
 
@@ -525,10 +525,10 @@ class _Tokenizer(object):
     Raises:
       ParseError: If a boolean value couldn't be consumed.
     """
-    if self.token in ('true', 't', '1'):
+    if self.token in (b'true', b't', b'1'):
       self.NextToken()
       return True
-    elif self.token in ('false', 'f', '0'):
+    elif self.token in (b'false', b'f', b'0'):
       self.NextToken()
       return False
     else:
@@ -559,9 +559,9 @@ class _Tokenizer(object):
       ParseError: If a byte array value couldn't be consumed.
     """
     list = [self._ConsumeSingleByteString()]
-    while len(self.token) > 0 and self.token[0] in ('\'', '"'):
+    while len(self.token) > 0 and self.token[0:1] in (b'\'', b'"'):
       list.append(self._ConsumeSingleByteString())
-    return "".join(list)
+    return b"".join(list)
 
   def _ConsumeSingleByteString(self):
     """Consume one token of a string literal.
@@ -571,7 +571,7 @@ class _Tokenizer(object):
     method only consumes one token.
     """
     text = self.token
-    if len(text) < 1 or text[0] not in ('\'', '"'):
+    if len(text) < 1 or text[0:1] not in (b'\'', b'"'):
       raise self._ParseError('Exptected string.')
 
     if len(text) < 2 or text[-1] != text[0]:
@@ -599,13 +599,13 @@ class _Tokenizer(object):
       ValueError: Thrown Iff the text is not a valid integer.
     """
     pos = 0
-    if text.startswith('-'):
+    if text.startswith(b'-'):
       pos += 1
 
     base = 10
-    if text.startswith('0x', pos) or text.startswith('0X', pos):
+    if text.startswith(b'0x', pos) or text.startswith(b'0X', pos):
       base = 16
-    elif text.startswith('0', pos):
+    elif text.startswith(b'0', pos):
       base = 8
 
     # Do the actual parsing. Exception handling is propagated to caller.
@@ -651,7 +651,7 @@ class _Tokenizer(object):
     self._SkipWhitespace()
 
     if not self._lines and len(self._current_line) <= self._column:
-      self.token = ''
+      self.token = b''
       return
 
     match = self._TOKEN.match(self._current_line, self._column)
@@ -659,7 +659,7 @@ class _Tokenizer(object):
       token = match.group(0)
       self.token = token
     else:
-      self.token = self._current_line[self._column]
+      self.token = self._current_line[self._column:self._column+1]
 
 
 # text.encode('string_escape') does not seem to satisfy our needs as it
@@ -684,7 +684,7 @@ def _CEscape(text, as_utf8):
   return "".join([escape(c) for c in text])
 
 
-_CUNESCAPE_HEX = re.compile('\\\\x([0-9a-fA-F]{2}|[0-9a-fA-F])')
+_CUNESCAPE_HEX = re.compile(b'\\\\x([0-9a-fA-F]{2}|[0-9a-fA-F])')
 
 
 def _CUnescape(text):
