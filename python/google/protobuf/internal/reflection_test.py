@@ -1358,10 +1358,10 @@ class ReflectionTest(unittest.TestCase):
     self.assertEqual(type(proto.optional_string), six.text_type)
 
     proto.optional_string = 'Testing'
-    self.assertEqual(proto.optional_string, str('Testing'))
+    self.assertEqual(proto.optional_string, 'Testing')
 
-    # Assign a value of type 'str' which can be encoded in UTF-8.
-    proto.optional_string = str('Testing')
+    # Assign a value of type 'bytes' which can be encoded in UTF-8.
+    proto.optional_string = b'Testing'
     self.assertEqual(proto.optional_string, 'Testing')
 
     if api_implementation.Type() == 'python':
@@ -2358,7 +2358,7 @@ class SerializationTest(unittest.TestCase):
     self.assertEqual(1, proto.optional_int32)
     self.assertEqual('foo', proto.optional_string)
     self.assertEqual(True, proto.optional_bool)
-    self.assertEqual('bar', proto.optional_bytes)
+    self.assertEqual(b'bar', proto.optional_bytes)
     self.assertEqual(1, proto.optional_nested_message.bb)
     self.assertEqual(1, proto.optional_foreign_message.c)
     self.assertEqual(unittest_pb2.TestAllTypes.FOO,
