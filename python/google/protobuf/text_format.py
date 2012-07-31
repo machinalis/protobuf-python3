@@ -340,7 +340,7 @@ class _Tokenizer(object):
     self._column = 0
     self._token_start = None
     self.token = ''
-    self._lines = deque(text_message.split('\n'))
+    self._lines = deque(text_message.split(b'\n'))
     self._current_line = ''
     self._previous_line = 0
     self._previous_column = 0
