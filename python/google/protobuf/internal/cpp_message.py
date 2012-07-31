@@ -39,7 +39,6 @@ import six
 import warnings
 from google.protobuf.internal import _net_proto2___python
 from google.protobuf import message
-import six
 
 
 _LABEL_REPEATED = _net_proto2___python.LABEL_REPEATED
@@ -597,9 +596,6 @@ def _AddMessageMethods(message_descriptor, cls):
   def FindInitializationErrors(self):
     return self._cmsg.FindInitializationErrors()
 
-  def __str__(self):
-    return self._cmsg.DebugString()
-
   def __eq__(self, other):
     if self is other:
       return True
@@ -615,6 +611,12 @@ def _AddMessageMethods(message_descriptor, cls):
 
   def __unicode__(self):
     return text_format.MessageToString(self, as_utf8=True).decode('utf-8')
+
+  if six.PY3:
+    __str__ = __unicode__
+  else:
+    def __str__(self):
+      return self._cmsg.DebugString()
 
   # Attach the local methods to the message class.
   for key, value in six.iteritems(locals().copy()):
