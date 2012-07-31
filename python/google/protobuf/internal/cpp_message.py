@@ -39,6 +39,7 @@ import six
 import warnings
 from google.protobuf.internal import _net_proto2___python
 from google.protobuf import message
+from google.protobuf import text_format
 
 
 _LABEL_REPEATED = _net_proto2___python.LABEL_REPEATED
