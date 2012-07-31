@@ -663,8 +663,12 @@ def _AddEqualsMethod(message_descriptor, cls):
 
 def _AddStrMethod(message_descriptor, cls):
   """Helper for _AddMessageMethods()."""
-  def __str__(self):
-    return text_format.MessageToString(self)
+  if six.PY3:
+    def __str__(self):
+      return text_format.MessageToString(self, as_utf8=True).decode('utf-8')
+  else:
+    def __str__(self):
+      return text_format.MessageToString(self)
   cls.__str__ = __str__
 
 
