@@ -230,7 +230,7 @@ class TextFormatTest(unittest.TestCase):
     return text
 
   def testMergeGolden(self):
-    golden_text = '\n'.join(self.ReadGolden('text_format_unittest_data.txt'))
+    golden_text = b'\n'.join(self.ReadGolden('text_format_unittest_data.txt'))
     parsed_message = unittest_pb2.TestAllTypes()
     text_format.Merge(golden_text, parsed_message)
 
@@ -239,7 +239,7 @@ class TextFormatTest(unittest.TestCase):
     self.assertEquals(message, parsed_message)
 
   def testMergeGoldenExtensions(self):
-    golden_text = '\n'.join(self.ReadGolden(
+    golden_text = b'\n'.join(self.ReadGolden(
         'text_format_unittest_extensions_data.txt'))
     parsed_message = unittest_pb2.TestAllExtensions()
     text_format.Merge(golden_text, parsed_message)
