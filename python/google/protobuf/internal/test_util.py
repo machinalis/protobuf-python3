@@ -346,7 +346,7 @@ def ExpectAllFieldsAndExtensionsInOrder(serialized):
   message.my_float = 1.0
   expected_strings.append(message.SerializeToString())
   message.Clear()
-  expected = ''.join(expected_strings)
+  expected = b''.join(expected_strings)
 
   if expected != serialized:
     raise ValueError('Expected %r, found %r' % (expected, serialized))
