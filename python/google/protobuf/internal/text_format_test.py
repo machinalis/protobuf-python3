@@ -107,14 +107,14 @@ class TextFormatTest(unittest.TestCase):
     message.repeated_string.append('\u00fc\ua71f')
     self.CompareToGoldenText(
       self.RemoveRedundantZeros(text_format.MessageToString(message)),
-      'repeated_int64: -9223372036854775808\n'
-      'repeated_uint64: 18446744073709551615\n'
-      'repeated_double: 123.456\n'
-      'repeated_double: 1.23e+22\n'
-      'repeated_double: 1.23e-18\n'
-      'repeated_string: '
-        '"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""\n'
-      'repeated_string: "\\303\\274\\352\\234\\237"\n')
+      b'repeated_int64: -9223372036854775808\n'
+      b'repeated_uint64: 18446744073709551615\n'
+      b'repeated_double: 123.456\n'
+      b'repeated_double: 1.23e+22\n'
+      b'repeated_double: 1.23e-18\n'
+      b'repeated_string: '
+        b'"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""\n'
+      b'repeated_string: "\\303\\274\\352\\234\\237"\n')
 
   def testPrintNestedMessageAsOneLine(self):
     message = unittest_pb2.TestAllTypes()
@@ -122,7 +122,7 @@ class TextFormatTest(unittest.TestCase):
     msg.bb = 42;
     self.CompareToGoldenText(
         text_format.MessageToString(message, as_one_line=True),
-        'repeated_nested_message { bb: 42 }')
+        b'repeated_nested_message { bb: 42 }')
 
   def testPrintRepeatedFieldsAsOneLine(self):
     message = unittest_pb2.TestAllTypes()
@@ -133,15 +133,15 @@ class TextFormatTest(unittest.TestCase):
     message.repeated_string.append("Zurich")
     self.CompareToGoldenText(
         text_format.MessageToString(message, as_one_line=True),
-        'repeated_int32: 1 repeated_int32: 1 repeated_int32: 3 '
-        'repeated_string: "Google" repeated_string: "Zurich"')
+        b'repeated_int32: 1 repeated_int32: 1 repeated_int32: 3 '
+        b'repeated_string: "Google" repeated_string: "Zurich"')
 
   def testPrintNestedNewLineInStringAsOneLine(self):
     message = unittest_pb2.TestAllTypes()
     message.optional_string = "a\nnew\nline"
     self.CompareToGoldenText(
         text_format.MessageToString(message, as_one_line=True),
-        'optional_string: "a\\nnew\\nline"')
+        b'optional_string: "a\\nnew\\nline"')
 
   def testPrintMessageSetAsOneLine(self):
     message = unittest_mset_pb2.TestMessageSetContainer()
@@ -151,14 +151,14 @@ class TextFormatTest(unittest.TestCase):
     message.message_set.Extensions[ext2].str = 'foo'
     self.CompareToGoldenText(
         text_format.MessageToString(message, as_one_line=True),
-        'message_set {'
-        ' [protobuf_unittest.TestMessageSetExtension1] {'
-        ' i: 23'
-        ' }'
-        ' [protobuf_unittest.TestMessageSetExtension2] {'
-        ' str: \"foo\"'
-        ' }'
-        ' }')
+        b'message_set {'
+        b' [protobuf_unittest.TestMessageSetExtension1] {'
+        b' i: 23'
+        b' }'
+        b' [protobuf_unittest.TestMessageSetExtension2] {'
+        b' str: \"foo\"'
+        b' }'
+        b' }')
 
   def testPrintExoticAsOneLine(self):
     message = unittest_pb2.TestAllTypes()
@@ -172,14 +172,14 @@ class TextFormatTest(unittest.TestCase):
     self.CompareToGoldenText(
       self.RemoveRedundantZeros(
           text_format.MessageToString(message, as_one_line=True)),
-      'repeated_int64: -9223372036854775808'
-      ' repeated_uint64: 18446744073709551615'
-      ' repeated_double: 123.456'
-      ' repeated_double: 1.23e+22'
-      ' repeated_double: 1.23e-18'
-      ' repeated_string: '
-      '"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""'
-      ' repeated_string: "\\303\\274\\352\\234\\237"')
+      b'repeated_int64: -9223372036854775808'
+      b' repeated_uint64: 18446744073709551615'
+      b' repeated_double: 123.456'
+      b' repeated_double: 1.23e+22'
+      b' repeated_double: 1.23e-18'
+      b' repeated_string: '
+      b'"\\000\\001\\007\\010\\014\\n\\r\\t\\013\\\\\\\'\\""'
+      b' repeated_string: "\\303\\274\\352\\234\\237"')
 
   def testRoundTripExoticAsOneLine(self):
     message = unittest_pb2.TestAllTypes()
@@ -276,14 +276,14 @@ class TextFormatTest(unittest.TestCase):
     self.assertEqual(2, message.repeated_uint64[1])
 
     message = unittest_mset_pb2.TestMessageSetContainer()
-    text = ('message_set {\n'
-            '  [protobuf_unittest.TestMessageSetExtension1] {\n'
-            '    i: 23\n'
-            '  }\n'
-            '  [protobuf_unittest.TestMessageSetExtension2] {\n'
-            '    str: \"foo\"\n'
-            '  }\n'
-            '}\n')
+    text = (b'message_set {\n'
+            b'  [protobuf_unittest.TestMessageSetExtension1] {\n'
+            b'    i: 23\n'
+            b'  }\n'
+            b'  [protobuf_unittest.TestMessageSetExtension2] {\n'
+            b'    str: \"foo\"\n'
+            b'  }\n'
+            b'}\n')
     text_format.Merge(text, message)
     ext1 = unittest_mset_pb2.TestMessageSetExtension1.message_set_extension
     ext2 = unittest_mset_pb2.TestMessageSetExtension2.message_set_extension
