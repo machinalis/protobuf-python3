@@ -87,14 +87,14 @@ class TextFormatTest(unittest.TestCase):
     message.message_set.Extensions[ext1].i = 23
     message.message_set.Extensions[ext2].str = 'foo'
     self.CompareToGoldenText(text_format.MessageToString(message),
-      'message_set {\n'
-      '  [protobuf_unittest.TestMessageSetExtension1] {\n'
-      '    i: 23\n'
-      '  }\n'
-      '  [protobuf_unittest.TestMessageSetExtension2] {\n'
-      '    str: \"foo\"\n'
-      '  }\n'
-      '}\n')
+      b'message_set {\n'
+      b'  [protobuf_unittest.TestMessageSetExtension1] {\n'
+      b'    i: 23\n'
+      b'  }\n'
+      b'  [protobuf_unittest.TestMessageSetExtension2] {\n'
+      b'    str: \"foo\"\n'
+      b'  }\n'
+      b'}\n')
 
   def testPrintExotic(self):
     message = unittest_pb2.TestAllTypes()
