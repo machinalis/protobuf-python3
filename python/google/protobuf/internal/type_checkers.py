@@ -165,7 +165,9 @@ _VALUE_CHECKERS = {
         *(float,)+six.integer_types),
     _FieldDescriptor.CPPTYPE_BOOL: TypeChecker(bool, int),
     _FieldDescriptor.CPPTYPE_ENUM: Int32ValueChecker(),
-    _FieldDescriptor.CPPTYPE_STRING: TypeChecker(str),
+     # note that the unicode case was caught in GetTypeChecker before using
+     # this table
+    _FieldDescriptor.CPPTYPE_STRING: TypeChecker(bytes),
     }
 
 
