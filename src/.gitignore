@@ -1,0 +1,14 @@
+.deps/
+.libs/
+protobuf-lazy-descriptor-test
+protobuf-lite-test
+protobuf-test
+protoc
+test_plugin
+testzip.jar
+testzip.list
+testzip.proto
+testzip.zip
+unittest_proto_middleman
+zcgunzip
+zcgzip
