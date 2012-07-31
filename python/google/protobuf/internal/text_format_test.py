@@ -63,8 +63,8 @@ class TextFormatTest(unittest.TestCase):
   def CompareToGoldenLines(self, text, golden_lines):
     actual_lines = text.splitlines(1)
     self.assertEqual(golden_lines, actual_lines,
-      b"Text doesn't match golden.  Diff:\n" +
-      b''.join(difflib.ndiff(golden_lines, actual_lines)))
+      "Text doesn't match golden.  Diff:\n" +
+      ''.join(difflib.ndiff(golden_lines, actual_lines)))
 
   def testPrintAllFields(self):
     message = unittest_pb2.TestAllTypes()
