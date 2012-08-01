@@ -222,11 +222,11 @@ class TextFormatTest(unittest.TestCase):
   def RemoveRedundantZeros(self, text):
     # Some platforms print 1e+5 as 1e+005.  This is fine, but we need to remove
     # these zeros in order to match the golden file.
-    text = text.replace('e+0','e+').replace('e+0','e+') \
-               .replace('e-0','e-').replace('e-0','e-')
+    text = text.replace(b'e+0', b'e+').replace(b'e+0', b'e+') \
+               .replace(b'e-0', b'e-').replace(b'e-0', b'e-')
     # Floating point fields are printed with .0 suffix even if they are
     # actualy integer numbers.
-    text = re.compile('\.0$', re.MULTILINE).sub('', text)
+    text = re.compile(b'\.0$', re.MULTILINE).sub(b'', text)
     return text
 
   def testMergeGolden(self):
