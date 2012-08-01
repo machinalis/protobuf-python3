@@ -667,20 +667,26 @@ class _Tokenizer(object):
 # "\0011".encode('string_escape') ends up being "\\x011", which will be
 # decoded in C++ as a single-character string with char code 0x11.
 def _CEscape(text, as_utf8):
+  if six.PY3:
+    local_ord = lambda x:x
+    local_tobytes = lambda x: bytes([x])
+  else:
+    local_ord = ord
+    local_tobytes = lambda x:x
   def escape(c):
-    o = ord(c)
-    if o == 10: return r"\n"   # optional escape
-    if o == 13: return r"\r"   # optional escape
-    if o ==  9: return r"\t"   # optional escape
-    if o == 39: return r"\'"   # optional escape
+    o = local_ord(c)
+    if o == 10: return br"\n"   # optional escape
+    if o == 13: return br"\r"   # optional escape
+    if o ==  9: return br"\t"   # optional escape
+    if o == 39: return br"\'"   # optional escape
 
-    if o == 34: return r'\"'   # necessary escape
-    if o == 92: return r"\\"   # necessary escape
+    if o == 34: return br'\"'   # necessary escape
+    if o == 92: return br"\\"   # necessary escape
 
     # necessary escapes
-    if not as_utf8 and (o >= 127 or o < 32): return "\\%03o" % o
-    return c
-  return "".join([escape(c) for c in text])
+    if not as_utf8 and (o >= 127 or o < 32): return ("\\%03o" % o).encode('ascii')
+    return local_tobytes(c)
+  return b"".join([escape(c) for c in text])
 
 
 _CUNESCAPE_HEX = re.compile(b'\\\\x([0-9a-fA-F]{2}|[0-9a-fA-F])')
