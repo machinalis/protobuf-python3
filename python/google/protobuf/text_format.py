@@ -693,4 +693,6 @@ def _CUnescape(text):
   # This is required because the 'string_escape' encoding doesn't
   # allow single-digit hex escapes (like '\xf').
   result = _CUNESCAPE_HEX.sub(ReplaceHex, text)
-  return result.decode('string_escape')
+  # latin1 maps 1 to 1 8-bit codepoints
+  return result.decode('unicode_escape').encode('latin1')
+
