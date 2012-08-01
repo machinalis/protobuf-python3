@@ -414,8 +414,8 @@ class TextFormatTest(unittest.TestCase):
       if str(expr) != e:
         msg = '%s raised, but with wrong message: "%s" instead of "%s"'
         raise self.failureException(msg % (exc_name,
-                                           str(expr).encode('string_escape'),
-                                           e.encode('string_escape')))
+                                           str(expr).encode('unicode_escape'),
+                                           e.encode('unicode_escape')))
       return
     else:
       raise self.failureException('%s not raised' % exc_name)
