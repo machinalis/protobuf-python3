@@ -693,8 +693,14 @@ _CUNESCAPE_HEX = re.compile(b'\\\\x([0-9a-fA-F]{2}|[0-9a-fA-F])')
 
 
 def _CUnescape(text):
+
+  if six.PY3:
+    local_chr = lambda x: bytes([x])
+  else:
+    local_chr = chr
+
   def ReplaceHex(m):
-    return chr(int(m.group(0)[2:], 16))
+    return local_chr(int(m.group(0)[2:], 16))
   # This is required because the 'string_escape' encoding doesn't
   # allow single-digit hex escapes (like '\xf').
   result = _CUNESCAPE_HEX.sub(ReplaceHex, text)
