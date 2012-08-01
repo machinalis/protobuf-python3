@@ -352,7 +352,7 @@ class _Tokenizer(object):
     Returns:
       True iff the end was reached.
     """
-    return self.token == ''
+    return self.token == b''
 
   def _PopLine(self):
     while len(self._current_line) <= self._column:
