@@ -94,7 +94,7 @@ def PrintField(field, value, out, indent=0, as_utf8=False, as_one_line=False):
     out.write(b']')
   elif field.type == descriptor.FieldDescriptor.TYPE_GROUP:
     # For groups, use the capitalized name.
-    out.write(field.message_type.name)
+    out.write(field.message_type.name.encode('ascii'))
   else:
     out.write(field.name.encode('ascii'))
 
@@ -125,7 +125,7 @@ def PrintFieldValue(field, value, out, indent=0,
       PrintMessage(value, out, indent + 2, as_utf8, as_one_line)
       out.write(b' ' * indent + b'}')
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_ENUM:
-    out.write(field.enum_type.values_by_number[value].name)
+    out.write(field.enum_type.values_by_number[value].name.encode('ascii'))
   elif field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_STRING:
     out.write(b'\"')
     if type(value) is six.text_type:
