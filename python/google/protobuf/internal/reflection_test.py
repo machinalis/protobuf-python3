@@ -864,9 +864,8 @@ class ReflectionTest(unittest.TestCase):
         containing_type=None, nested_types=[], enum_types=[],
         fields=[foo_field_descriptor], extensions=[],
         options=descriptor_pb2.MessageOptions())
-    class MyProtoClass(message.Message):
+    class MyProtoClass(reflection.BaseGeneratedMessage):
       DESCRIPTOR = mydescriptor
-      __metaclass__ = reflection.GeneratedProtocolMessageType
     myproto_instance = MyProtoClass()
     self.assertEqual(0, myproto_instance.foo_field)
     self.assertTrue(not myproto_instance.HasField('foo_field'))
