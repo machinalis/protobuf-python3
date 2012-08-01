@@ -172,7 +172,7 @@ def _MergeField(tokenizer, message):
     name = [tokenizer.ConsumeIdentifier()]
     while tokenizer.TryConsume(b'.'):
       name.append(tokenizer.ConsumeIdentifier())
-    name = '.'.join(name)
+    name = b'.'.join(name)
 
     if not message_descriptor.is_extendable:
       raise tokenizer.ParseErrorPreviousToken(
@@ -334,7 +334,6 @@ class _Tokenizer(object):
 
   def __init__(self, text_message):
     self._text_message = text_message
-
     self._position = 0
     self._line = -1
     self._column = 0
@@ -358,7 +357,7 @@ class _Tokenizer(object):
   def _PopLine(self):
     while len(self._current_line) <= self._column:
       if not self._lines:
-        self._current_line = ''
+        self._current_line = b''
         return
       self._line += 1
       self._column = 0
@@ -693,4 +692,6 @@ def _CUnescape(text):
   # This is required because the 'string_escape' encoding doesn't
   # allow single-digit hex escapes (like '\xf').
   result = _CUNESCAPE_HEX.sub(ReplaceHex, text)
-  return result.decode('string_escape')
+  # latin1 maps 1 to 1 8-bit codepoints
+  return result.decode('unicode_escape').encode('latin1')
+
