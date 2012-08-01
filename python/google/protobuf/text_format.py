@@ -231,7 +231,7 @@ def _MergeField(tokenizer, message):
 
     while not tokenizer.TryConsume(end_token):
       if tokenizer.AtEnd():
-        raise tokenizer.ParseErrorPreviousToken('Expected "%s".' % (end_token))
+        raise tokenizer.ParseErrorPreviousToken('Expected "%s".' % (end_token.decode('ascii')))
       _MergeField(tokenizer, sub_message)
   else:
     _MergeScalarField(tokenizer, message, field)
@@ -396,7 +396,7 @@ class _Tokenizer(object):
       ParseError: If the text couldn't be consumed.
     """
     if not self.TryConsume(token):
-      raise self._ParseError('Expected "%s".' % token)
+      raise self._ParseError('Expected "%s".' % token.decode('ascii'))
 
   def LookingAtInteger(self):
     """Checks if the current token is an integer.
