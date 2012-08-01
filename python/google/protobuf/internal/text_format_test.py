@@ -62,9 +62,14 @@ class TextFormatTest(unittest.TestCase):
 
   def CompareToGoldenLines(self, text, golden_lines):
     actual_lines = text.splitlines(1)
+    if not six.PY3:
+      diff = map(lambda x: x.decode('unicode_escape'), difflib.ndiff(golden_lines, actual_lines))
+    else:
+      diff = difflib.ndiff(golden_lines, actual_lines)
+
     self.assertEqual(golden_lines, actual_lines,
-      "Text doesn't match golden.  Diff:\n" +
-      ''.join(difflib.ndiff(golden_lines, actual_lines)))
+                     "Text doesn't match golden.  Diff:\n" +
+                     "".join(diff))
 
   def testPrintAllFields(self):
     message = unittest_pb2.TestAllTypes()
