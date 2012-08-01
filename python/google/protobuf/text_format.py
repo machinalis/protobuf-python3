@@ -172,7 +172,7 @@ def _MergeField(tokenizer, message):
     name = [tokenizer.ConsumeIdentifier()]
     while tokenizer.TryConsume(b'.'):
       name.append(tokenizer.ConsumeIdentifier())
-    name = '.'.join(name)
+    name = b'.'.join(name)
 
     if not message_descriptor.is_extendable:
       raise tokenizer.ParseErrorPreviousToken(
@@ -334,7 +334,6 @@ class _Tokenizer(object):
 
   def __init__(self, text_message):
     self._text_message = text_message
-
     self._position = 0
     self._line = -1
     self._column = 0

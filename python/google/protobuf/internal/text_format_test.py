@@ -269,8 +269,8 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeMessageSet(self):
     message = unittest_pb2.TestAllTypes()
-    text = ('repeated_uint64: 1\n'
-            'repeated_uint64: 2\n')
+    text = (b'repeated_uint64: 1\n'
+            b'repeated_uint64: 2\n')
     text_format.Merge(text, message)
     self.assertEqual(1, message.repeated_uint64[0])
     self.assertEqual(2, message.repeated_uint64[1])
@@ -318,18 +318,18 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeEmptyText(self):
     message = unittest_pb2.TestAllTypes()
-    text = ''
+    text = b''
     text_format.Merge(text, message)
     self.assertEquals(unittest_pb2.TestAllTypes(), message)
 
   def testMergeInvalidUtf8(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'repeated_string: "\\xc3\\xc3"'
+    text = b'repeated_string: "\\xc3\\xc3"'
     self.assertRaises(text_format.ParseError, text_format.Merge, text, message)
 
   def testMergeSingleWord(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'foo'
+    text = b'foo'
     self.assertRaisesWithMessage(
         text_format.ParseError,
         ('1:1 : Message type "protobuf_unittest.TestAllTypes" has no field named '
@@ -338,7 +338,7 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeUnknownField(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'unknown_field: 8\n'
+    text = b'unknown_field: 8\n'
     self.assertRaisesWithMessage(
         text_format.ParseError,
         ('1:1 : Message type "protobuf_unittest.TestAllTypes" has no field named '
@@ -347,7 +347,7 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeBadExtension(self):
     message = unittest_pb2.TestAllExtensions()
-    text = '[unknown_extension]: 8\n'
+    text = b'[unknown_extension]: 8\n'
     self.assertRaisesWithMessage(
         text_format.ParseError,
         '1:2 : Extension "unknown_extension" not registered.',
@@ -361,32 +361,32 @@ class TextFormatTest(unittest.TestCase):
 
   def testMergeGroupNotClosed(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'RepeatedGroup: <'
+    text = b'RepeatedGroup: <'
     self.assertRaisesWithMessage(
         text_format.ParseError, '1:16 : Expected ">".',
         text_format.Merge, text, message)
 
-    text = 'RepeatedGroup: {'
+    text = b'RepeatedGroup: {'
     self.assertRaisesWithMessage(
         text_format.ParseError, '1:16 : Expected "}".',
         text_format.Merge, text, message)
 
   def testMergeEmptyGroup(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'OptionalGroup: {}'
+    text = b'OptionalGroup: {}'
     text_format.Merge(text, message)
     self.assertTrue(message.HasField('optionalgroup'))
 
     message.Clear()
 
     message = unittest_pb2.TestAllTypes()
-    text = 'OptionalGroup: <>'
+    text = b'OptionalGroup: <>'
     text_format.Merge(text, message)
     self.assertTrue(message.HasField('optionalgroup'))
 
   def testMergeBadEnumValue(self):
     message = unittest_pb2.TestAllTypes()
-    text = 'optional_nested_enum: BARR'
+    text = b'optional_nested_enum: BARR'
     self.assertRaisesWithMessage(
         text_format.ParseError,
         ('1:23 : Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
@@ -394,7 +394,7 @@ class TextFormatTest(unittest.TestCase):
         text_format.Merge, text, message)
 
     message = unittest_pb2.TestAllTypes()
-    text = 'optional_nested_enum: 100'
+    text = b'optional_nested_enum: 100'
     self.assertRaisesWithMessage(
         text_format.ParseError,
         ('1:23 : Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
@@ -424,74 +424,74 @@ class TextFormatTest(unittest.TestCase):
 class TokenizerTest(unittest.TestCase):
 
   def testSimpleTokenCases(self):
-    text = ('identifier1:"string1"\n     \n\n'
-            'identifier2 : \n \n123  \n  identifier3 :\'string\'\n'
-            'identifiER_4 : 1.1e+2 ID5:-0.23 ID6:\'aaaa\\\'bbbb\'\n'
-            'ID7 : "aa\\"bb"\n\n\n\n ID8: {A:inf B:-inf C:true D:false}\n'
-            'ID9: 22 ID10: -111111111111111111 ID11: -22\n'
-            'ID12: 2222222222222222222 '
-            'false_bool:  0 true_BOOL:t \n true_bool1:  1 false_BOOL1:f ' )
+    text = (b'identifier1:"string1"\n     \n\n'
+            b'identifier2 : \n \n123  \n  identifier3 :\'string\'\n'
+            b'identifiER_4 : 1.1e+2 ID5:-0.23 ID6:\'aaaa\\\'bbbb\'\n'
+            b'ID7 : "aa\\"bb"\n\n\n\n ID8: {A:inf B:-inf C:true D:false}\n'
+            b'ID9: 22 ID10: -111111111111111111 ID11: -22\n'
+            b'ID12: 2222222222222222222 '
+            b'false_bool:  0 true_BOOL:t \n true_bool1:  1 false_BOOL1:f ' )
     tokenizer = text_format._Tokenizer(text)
-    methods = [(tokenizer.ConsumeIdentifier, 'identifier1'),
-               ':',
-               (tokenizer.ConsumeString, 'string1'),
-               (tokenizer.ConsumeIdentifier, 'identifier2'),
-               ':',
+    methods = [(tokenizer.ConsumeIdentifier, b'identifier1'),
+               b':',
+               (tokenizer.ConsumeString, b'string1'),
+               (tokenizer.ConsumeIdentifier, b'identifier2'),
+               b':',
                (tokenizer.ConsumeInt32, 123),
-               (tokenizer.ConsumeIdentifier, 'identifier3'),
-               ':',
-               (tokenizer.ConsumeString, 'string'),
-               (tokenizer.ConsumeIdentifier, 'identifiER_4'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'identifier3'),
+               b':',
+               (tokenizer.ConsumeString, b'string'),
+               (tokenizer.ConsumeIdentifier, b'identifiER_4'),
+               b':',
                (tokenizer.ConsumeFloat, 1.1e+2),
-               (tokenizer.ConsumeIdentifier, 'ID5'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'ID5'),
+               b':',
                (tokenizer.ConsumeFloat, -0.23),
-               (tokenizer.ConsumeIdentifier, 'ID6'),
-               ':',
-               (tokenizer.ConsumeString, 'aaaa\'bbbb'),
-               (tokenizer.ConsumeIdentifier, 'ID7'),
-               ':',
-               (tokenizer.ConsumeString, 'aa\"bb'),
-               (tokenizer.ConsumeIdentifier, 'ID8'),
-               ':',
-               '{',
-               (tokenizer.ConsumeIdentifier, 'A'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'ID6'),
+               b':',
+               (tokenizer.ConsumeString, b'aaaa\'bbbb'),
+               (tokenizer.ConsumeIdentifier, b'ID7'),
+               b':',
+               (tokenizer.ConsumeString, b'aa\"bb'),
+               (tokenizer.ConsumeIdentifier, b'ID8'),
+               b':',
+               b'{',
+               (tokenizer.ConsumeIdentifier, b'A'),
+               b':',
                (tokenizer.ConsumeFloat, text_format._INFINITY),
-               (tokenizer.ConsumeIdentifier, 'B'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'B'),
+               b':',
                (tokenizer.ConsumeFloat, -text_format._INFINITY),
-               (tokenizer.ConsumeIdentifier, 'C'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'C'),
+               b':',
                (tokenizer.ConsumeBool, True),
-               (tokenizer.ConsumeIdentifier, 'D'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'D'),
+               b':',
                (tokenizer.ConsumeBool, False),
-               '}',
-               (tokenizer.ConsumeIdentifier, 'ID9'),
-               ':',
+               b'}',
+               (tokenizer.ConsumeIdentifier, b'ID9'),
+               b':',
                (tokenizer.ConsumeUint32, 22),
-               (tokenizer.ConsumeIdentifier, 'ID10'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'ID10'),
+               b':',
                (tokenizer.ConsumeInt64, -111111111111111111),
-               (tokenizer.ConsumeIdentifier, 'ID11'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'ID11'),
+               b':',
                (tokenizer.ConsumeInt32, -22),
-               (tokenizer.ConsumeIdentifier, 'ID12'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'ID12'),
+               b':',
                (tokenizer.ConsumeUint64, 2222222222222222222),
-               (tokenizer.ConsumeIdentifier, 'false_bool'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'false_bool'),
+               b':',
                (tokenizer.ConsumeBool, False),
-               (tokenizer.ConsumeIdentifier, 'true_BOOL'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'true_BOOL'),
+               b':',
                (tokenizer.ConsumeBool, True),
-               (tokenizer.ConsumeIdentifier, 'true_bool1'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'true_bool1'),
+               b':',
                (tokenizer.ConsumeBool, True),
-               (tokenizer.ConsumeIdentifier, 'false_BOOL1'),
-               ':',
+               (tokenizer.ConsumeIdentifier, b'false_BOOL1'),
+               b':',
                (tokenizer.ConsumeBool, False)]
 
     i = 0
@@ -510,7 +510,7 @@ class TokenizerTest(unittest.TestCase):
     # as the '0' special cases.
     int64_max = (1 << 63) - 1
     uint32_max = (1 << 32) - 1
-    text = '-1 %d %d' % (uint32_max + 1, int64_max + 1)
+    text = ('-1 %d %d' % (uint32_max + 1, int64_max + 1)).encode('ascii')
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeUint32)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeUint64)
@@ -524,7 +524,7 @@ class TokenizerTest(unittest.TestCase):
     self.assertEqual(int64_max + 1, tokenizer.ConsumeUint64())
     self.assertTrue(tokenizer.AtEnd())
 
-    text = '-0 -0 0 0'
+    text = b'-0 -0 0 0'
     tokenizer = text_format._Tokenizer(text)
     self.assertEqual(0, tokenizer.ConsumeUint32())
     self.assertEqual(0, tokenizer.ConsumeUint64())
@@ -533,28 +533,28 @@ class TokenizerTest(unittest.TestCase):
     self.assertTrue(tokenizer.AtEnd())
 
   def testConsumeByteString(self):
-    text = '"string1\''
+    text = b'"string1\''
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeByteString)
 
-    text = 'string1"'
+    text = b'string1"'
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeByteString)
 
-    text = '\n"\\xt"'
+    text = b'\n"\\xt"'
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeByteString)
 
-    text = '\n"\\"'
+    text = b'\n"\\"'
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeByteString)
 
-    text = '\n"\\x"'
+    text = b'\n"\\x"'
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeByteString)
 
   def testConsumeBool(self):
-    text = 'not-a-bool'
+    text = b'not-a-bool'
     tokenizer = text_format._Tokenizer(text)
     self.assertRaises(text_format.ParseError, tokenizer.ConsumeBool)
 
