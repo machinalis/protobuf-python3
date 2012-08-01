@@ -497,7 +497,7 @@ class TokenizerTest(unittest.TestCase):
     i = 0
     while not tokenizer.AtEnd():
       m = methods[i]
-      if type(m) == six.text_type:
+      if type(m) == six.binary_type:
         token = tokenizer.token
         self.assertEqual(token, m)
         tokenizer.NextToken()
