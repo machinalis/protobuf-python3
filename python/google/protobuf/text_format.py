@@ -172,7 +172,7 @@ def _MergeField(tokenizer, message):
     name = [tokenizer.ConsumeIdentifier()]
     while tokenizer.TryConsume(b'.'):
       name.append(tokenizer.ConsumeIdentifier())
-    name = b'.'.join(name)
+    name = b'.'.join(name).decode('ascii')
 
     if not message_descriptor.is_extendable:
       raise tokenizer.ParseErrorPreviousToken(
@@ -188,8 +188,8 @@ def _MergeField(tokenizer, message):
               name, message_descriptor.full_name))
     tokenizer.Consume(b']')
   else:
-    name = tokenizer.ConsumeIdentifier()
-    field = message_descriptor.fields_by_name.get(name.decode('ascii'), None)
+    name = tokenizer.ConsumeIdentifier().decode('ascii')
+    field = message_descriptor.fields_by_name.get(name, None)
 
     # Group names are expected to be capitalized as they appear in the
     # .proto file, which actually matches their type names, not their field
@@ -287,7 +287,7 @@ def _MergeScalarField(tokenizer, message, field):
             'Enum type "%s" has no value with number %d.' % (
                 enum_descriptor.full_name, number))
     else:
-      identifier = tokenizer.ConsumeIdentifier()
+      identifier = tokenizer.ConsumeIdentifier().decode('ascii')
       enum_value = enum_descriptor.values_by_name.get(identifier, None)
       if enum_value is None:
         raise tokenizer.ParseErrorPreviousToken(
