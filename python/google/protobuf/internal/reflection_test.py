@@ -1360,9 +1360,9 @@ class ReflectionTest(unittest.TestCase):
     proto.optional_string = 'Testing'
     self.assertEqual(proto.optional_string, 'Testing')
 
-    # Assign a value of type 'bytes' which can be encoded in UTF-8.
+    # Assign a value of type 'bytes' which should be ascii. Value is not encoded
     proto.optional_string = b'Testing'
-    self.assertEqual(proto.optional_string, 'Testing')
+    self.assertEqual(proto.optional_string, b'Testing')
 
     if api_implementation.Type() == 'python':
       # Values of type 'bytes' are also accepted as long as they can be
