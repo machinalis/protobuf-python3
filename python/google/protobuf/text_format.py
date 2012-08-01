@@ -357,7 +357,7 @@ class _Tokenizer(object):
   def _PopLine(self):
     while len(self._current_line) <= self._column:
       if not self._lines:
-        self._current_line = ''
+        self._current_line = b''
         return
       self._line += 1
       self._column = 0
