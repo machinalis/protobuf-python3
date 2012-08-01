@@ -401,7 +401,7 @@ def ExpectAllFieldsSet(test_case, message):
   test_case.assertEqual(112, message.optional_double)
   test_case.assertEqual(True, message.optional_bool)
   test_case.assertEqual('115', message.optional_string)
-  test_case.assertEqual('116', message.optional_bytes)
+  test_case.assertEqual(b'116', message.optional_bytes)
 
   test_case.assertEqual(117, message.optionalgroup.a)
   test_case.assertEqual(118, message.optional_nested_message.bb)
@@ -458,7 +458,7 @@ def ExpectAllFieldsSet(test_case, message):
   test_case.assertEqual(212, message.repeated_double[0])
   test_case.assertEqual(True, message.repeated_bool[0])
   test_case.assertEqual('215', message.repeated_string[0])
-  test_case.assertEqual('216', message.repeated_bytes[0])
+  test_case.assertEqual(b'216', message.repeated_bytes[0])
 
   test_case.assertEqual(217, message.repeatedgroup[0].a)
   test_case.assertEqual(218, message.repeated_nested_message[0].bb)
@@ -486,7 +486,7 @@ def ExpectAllFieldsSet(test_case, message):
   test_case.assertEqual(312, message.repeated_double[1])
   test_case.assertEqual(False, message.repeated_bool[1])
   test_case.assertEqual('315', message.repeated_string[1])
-  test_case.assertEqual('316', message.repeated_bytes[1])
+  test_case.assertEqual(b'316', message.repeated_bytes[1])
 
   test_case.assertEqual(317, message.repeatedgroup[1].a)
   test_case.assertEqual(318, message.repeated_nested_message[1].bb)
@@ -536,7 +536,7 @@ def ExpectAllFieldsSet(test_case, message):
   test_case.assertEqual(412, message.default_double)
   test_case.assertEqual(False, message.default_bool)
   test_case.assertEqual('415', message.default_string)
-  test_case.assertEqual('416', message.default_bytes)
+  test_case.assertEqual(b'416', message.default_bytes)
 
   test_case.assertEqual(unittest_pb2.TestAllTypes.FOO,
                         message.default_nested_enum)
